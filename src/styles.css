@@ -1,3 +1,172 @@
-/* You can add global styles to this file, and also import other style files */
-
+/* Ported from the React app's src/index.css. Tailwind 4 works identically in
+   Angular — only the `#root` selector changed (Angular mounts into <app-root>). */
 @import 'tailwindcss';
+@plugin "@tailwindcss/forms";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* Brand colours — Official ASEAN blue ramp */
+  --color-primary-50: #ebf0fa; /* blue-tint */
+  --color-primary-100: #d6e1f5; /* blue-tint2 */
+  --color-primary-200: #d6e1f5; /* no real value here — reuses blue-tint2 */
+  --color-primary-300: #d6e1f5; /* no real value here — reuses blue-tint2 */
+  --color-primary-400: #2c59a7; /* no real value here — reuses blue (base) */
+  --color-primary-500: #2c59a7; /* no real value here — reuses blue (base) */
+  --color-primary-600: #2c59a7; /* blue (base) */
+  --color-primary-700: #274f96; /* blue-90 */
+  --color-primary-800: #1a3a72; /* blue-deep */
+  --color-primary-900: #0f2347; /* blue-deeper */
+
+  /* Official ASEAN 12-colour palette — remaining 11 identity colours */
+  --color-asean-red: #c73535; /* confirmed by 2 of 3 mockups: disaster-risk-resilience.html and adme-system_2.html */
+  --color-asean-yellow: #fbf315;
+  --color-asean-violette: #6c3694;
+  --color-asean-green: #58946e;
+  --color-asean-orange: #d99534;
+  --color-asean-turquoise: #639ac0;
+  --color-asean-dark-blue: #574da1;
+  --color-asean-purple: #ab137b;
+  --color-asean-orange-red: #cf6c31;
+  --color-asean-mid-yellow: #ebca39;
+  --color-asean-light-green: #a4c747;
+
+  /* Brand mandate: Arial only (disaster-risk-resilience.html, --font) */
+  --font-sans: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+
+  /* Socio-cultural pages match ADME_Site_Current.html (`--font-body` / `--font-display`) */
+  --font-scd: Inter, Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  --font-scd-display: Sora, Inter, Arial, sans-serif;
+
+  /* Home hero banner: Arial only, as rendered on ascc-fe.assistasia.org.
+     `sans-serif` is just the generic safety net for a device with no Arial. */
+  --font-banner: Arial, sans-serif;
+
+  /* Socio-cultural page tokens (migrated from socio-cultural.css) */
+  --color-scd-bg: #f4f7fc;
+  --color-scd-ink: #0d1926;
+  --color-scd-ink-2: #2d3f5c;
+  --color-scd-ink-3: #5a7299;
+  --color-scd-ink-4: #8aaac8;
+  --color-scd-rich: #091830;
+
+  --shadow-scd-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --shadow-scd-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 6px 16px -8px rgba(15, 23, 42, 0.08);
+  --shadow-scd-md: 0 4px 12px rgba(15, 23, 42, 0.08), 0 12px 32px -12px rgba(15, 23, 42, 0.12);
+  --shadow-scd-lg: 0 12px 32px rgba(15, 23, 42, 0.12), 0 24px 60px -20px rgba(15, 23, 42, 0.16);
+  --shadow-scd-card: 0 1px 2px rgba(9, 24, 48, 0.04);
+  --shadow-scd-lift: 0 10px 24px -10px rgba(9, 24, 48, 0.18);
+  --shadow-scd-blue: 0 4px 10px rgba(44, 89, 167, 0.28);
+  --shadow-scd-code: 0 3px 8px rgba(44, 89, 167, 0.35);
+  --shadow-scd-tt: 0 8px 24px rgba(15, 35, 71, 0.35);
+
+  --animate-scd-page-in: scd-page-in 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  --animate-scd-shake: scd-shake 0.38s ease;
+  --animate-scd-flash: scd-flash 1.6s ease;
+  --animate-scd-reveal: scd-reveal 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes scd-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scd-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes scd-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgba(44, 89, 167, 0);
+  }
+  15% {
+    box-shadow: 0 0 0 4px rgba(44, 89, 167, 0.35);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(44, 89, 167, 0);
+  }
+}
+
+@keyframes scd-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-white font-sans text-gray-900 antialiased overflow-x-hidden;
+  }
+
+  app-root {
+    @apply block min-h-screen;
+  }
+}
+
+@layer utilities {
+  /* Subtle scrollbar for small scroll areas (filter dropdown panels, side lists).
+     Thumb stays lighter than the text it scrolls past; hover only one step darker. */
+  .scrollbar-subtle {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #e5e7eb transparent; /* thumb, track (Firefox) */
+  }
+  .scrollbar-subtle::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-subtle::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scrollbar-subtle::-webkit-scrollbar-thumb {
+    background: #e5e7eb; /* gray-200 — lighter than option text */
+    border-radius: 9999px;
+  }
+  .scrollbar-subtle::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db; /* gray-300 — barely one step up on hover */
+  }
+
+  /* Fully invisible scrollbar — still scrollable (mouse wheel, trackpad,
+     touch, keyboard), just no visible track/thumb. Used where a scroll
+     affordance would look out of place (e.g. the primary nav row), unlike
+     .scrollbar-subtle which keeps a thin visible thumb for areas users are
+     expected to notice are scrollable. */
+  .scrollbar-none {
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Edge */
+  }
+}
+
+/* Material snackbar variants used by NotificationService (panelClass). Overriding via the
+   component's documented CSS custom properties — no ::ng-deep needed for global styles. */
+.snack-success {
+  --mat-snack-bar-container-color: #1f6f4a;
+}
+.snack-error {
+  --mat-snack-bar-container-color: #b42318;
+}

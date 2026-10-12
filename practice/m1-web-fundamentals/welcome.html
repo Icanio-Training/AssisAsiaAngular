@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="ADME Portal welcome page — M1 practice" />
+    <title>Welcome | ADME (M1 practice)</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="js/welcome.js"></script>
+  </head>
+  <body>
+    <!-- <header> + <nav>: page banner and the main navigation landmark. -->
+    <header class="site-header">
+      <img src="../../public/assets/adme-logo.svg" alt="ADME home" width="140" height="35" />
+      <nav aria-label="Main">
+        <ul class="nav-list">
+          <li><a href="#" aria-current="page">ASCC Initiatives</a></li>
+          <li><a href="#">ASCC Outcome Documents</a></li>
+          <li><a href="#">ASCC Strategic Plan KPIs</a></li>
+          <li><a href="#">Data Management</a></li>
+        </ul>
+      </nav>
+      <div class="user-chip">
+        <!-- CSS position: the dot is `position:absolute` inside this `position:relative` avatar. -->
+        <span id="avatar" class="avatar" aria-hidden="true"></span>
+        <button id="logout-btn" type="button" class="btn-outline">Logout</button>
+      </div>
+    </header>
+
+    <main class="welcome">
+      <section aria-labelledby="welcome-title">
+        <p id="role" class="eyebrow"></p>
+        <h1 id="welcome-title">Welcome back</h1>
+        <p class="muted">
+          Pick a tool to start. (In the Angular app these cards link to real pages.)
+        </p>
+      </section>
+
+      <!-- Filled by JS from an array with .map() — the plain-JS version of @for / .map() in JSX. -->
+      <ul id="tool-grid" class="tool-grid" role="list"></ul>
+    </main>
+
+    <!-- <footer>: page footer landmark. -->
+    <footer class="site-footer">
+      <p>© 2026 ADME · ASCC Database for Monitoring and Evaluation System</p>
+    </footer>
+  </body>
+</html>

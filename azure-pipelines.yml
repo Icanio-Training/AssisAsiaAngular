@@ -1,0 +1,86 @@
+# =============================================================================
+# Azure DevOps equivalent of the Jenkinsfile: build once → push to Azure Container
+# Registry (ACR) → deploy the same image to AKS dev → uat → prod.
+# Approvals live on the Azure DevOps "Environments" (adme-uat, adme-prod), not in YAML.
+# Secrets come from Azure Key Vault (variable group linked to Key Vault), never from git.
+# =============================================================================
+trigger:
+  branches: { include: [main] }
+
+pr:
+  branches: { include: [main] }
+
+variables:
+  - group: adme-keyvault                   # variable group linked to Azure Key Vault
+  - name: acrServiceConnection
+    value: adme-acr                        # Docker registry service connection
+  - name: imageRepository
+    value: adme-portal-angular
+  - name: tag
+    value: $(Build.SourceVersion)
+
+stages:
+  - stage: Build
+    jobs:
+      - job: build
+        pool: { vmImage: ubuntu-latest }
+        steps:
+          - task: NodeTool@0
+            inputs: { versionSpec: '24.x' }
+          - script: npm ci
+            displayName: Install
+          - script: npx ng lint && npm run format:check
+            displayName: Lint
+          - script: npm audit --omit=dev --audit-level=high
+            displayName: Dependency audit
+          - script: npx ng test --watch=false --coverage
+            displayName: Unit tests
+          - task: PublishCodeCoverageResults@2
+            inputs: { summaryFileLocation: coverage/cobertura-coverage.xml }
+            condition: succeededOrFailed()
+          - task: Docker@2
+            displayName: Build and push image to ACR
+            inputs:
+              command: buildAndPush
+              containerRegistry: $(acrServiceConnection)
+              repository: $(imageRepository)
+              tags: $(tag)
+          - publish: deploy/k8s
+            artifact: manifests
+
+  - stage: DeployDev
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: dev
+        environment: adme-dev.adme-dev     # <environment>.<AKS namespace resource>
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: deploy/azure/deploy-steps.yml
+                  parameters: { overlay: dev, tag: $(tag) }
+
+  - stage: DeployUat
+    dependsOn: DeployDev
+    jobs:
+      - deployment: uat
+        environment: adme-uat.adme-uat     # approval check configured on this Environment
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: deploy/azure/deploy-steps.yml
+                  parameters: { overlay: uat, tag: $(tag) }
+
+  - stage: DeployProd
+    dependsOn: DeployUat
+    jobs:
+      - deployment: prod
+        environment: adme-prod.adme-prod
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - template: deploy/azure/deploy-steps.yml
+                  parameters: { overlay: prod, tag: $(tag) }

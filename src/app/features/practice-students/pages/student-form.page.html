@@ -1,0 +1,200 @@
+<section aria-labelledby="form-heading" class="mx-auto flex max-w-3xl flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <a mat-icon-button routerLink="../list" aria-label="Back to the student list">
+      <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+    </a>
+    <h1 id="form-heading" class="text-xl font-semibold">
+      {{ isEdit() ? 'Edit student #' + id() : 'Add student' }}
+    </h1>
+  </div>
+
+  @if (loading()) {
+    <p role="status">Loading student…</p>
+  }
+
+  <form [formGroup]="form" class="flex flex-col gap-2" novalidate (ngSubmit)="submit()">
+    <div class="grid gap-x-4 sm:grid-cols-2">
+      <mat-form-field>
+        <mat-label>First name</mat-label>
+        <input matInput formControlName="firstName" autocomplete="given-name" />
+        @if (form.controls.firstName.hasError('required')) {
+          <mat-error>First name is required.</mat-error>
+        } @else if (form.controls.firstName.hasError('minlength')) {
+          <mat-error>At least 2 characters.</mat-error>
+        } @else if (form.controls.firstName.hasError('hasDigits')) {
+          <mat-error>Names can't contain digits (custom validator).</mat-error>
+        } @else if (form.controls.firstName.hasError('server')) {
+          <mat-error>{{ form.controls.firstName.getError('server') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Last name</mat-label>
+        <input matInput formControlName="lastName" autocomplete="family-name" />
+        @if (form.controls.lastName.hasError('required')) {
+          <mat-error>Last name is required.</mat-error>
+        } @else if (form.controls.lastName.hasError('pattern')) {
+          <mat-error>Letters, spaces, ' and - only (pattern validator).</mat-error>
+        } @else if (form.controls.lastName.hasError('server')) {
+          <mat-error>{{ form.controls.lastName.getError('server') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="email" />
+        @if (form.controls.email.pending) {
+          <mat-hint aria-live="polite">Checking availability…</mat-hint>
+        }
+        @if (form.controls.email.hasError('required')) {
+          <mat-error>Email is required.</mat-error>
+        } @else if (form.controls.email.hasError('email')) {
+          <mat-error>Enter a valid email address.</mat-error>
+        } @else if (form.controls.email.hasError('emailTaken')) {
+          <mat-error>This email is already used (async validator).</mat-error>
+        } @else if (form.controls.email.hasError('server')) {
+          <mat-error>{{ form.controls.email.getError('server') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Course</mat-label>
+        <mat-select formControlName="course">
+          @for (course of courses; track course) {
+            <mat-option [value]="course">{{ course }}</mat-option>
+          }
+        </mat-select>
+        @if (form.controls.course.hasError('required')) {
+          <mat-error>Pick a course.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Date of birth</mat-label>
+        <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
+        <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+        <mat-datepicker #dobPicker startView="multi-year" />
+        <mat-hint>MM/DD/YYYY</mat-hint>
+        @if (form.controls.dateOfBirth.hasError('matDatepickerParse')) {
+          <mat-error>That is not a valid date.</mat-error>
+        } @else if (form.controls.dateOfBirth.hasError('required')) {
+          <mat-error>Date of birth is required.</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Enrolled on</mat-label>
+        <input
+          matInput
+          [matDatepicker]="enrolPicker"
+          formControlName="enrolledOn"
+          [errorStateMatcher]="enrolmentMatcher"
+        />
+        <mat-datepicker-toggle matIconSuffix [for]="enrolPicker" />
+        <mat-datepicker #enrolPicker />
+        @if (form.controls.enrolledOn.hasError('required')) {
+          <mat-error>Enrolment date is required.</mat-error>
+        } @else if (form.hasError('enrolledBeforeBirth')) {
+          <mat-error>Must be after the date of birth (cross-field validator).</mat-error>
+        } @else if (form.hasError('tooYoung')) {
+          <mat-error>
+            Must be at least {{ form.getError('tooYoung').minAge }} at enrolment (was
+            {{ form.getError('tooYoung').actualAge }}).
+          </mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <div class="flex flex-col gap-1">
+      <span id="status-label" class="text-sm font-medium">Status</span>
+      <mat-radio-group formControlName="status" aria-labelledby="status-label" class="flex gap-4">
+        <mat-radio-button value="active">Active</mat-radio-button>
+        <mat-radio-button value="inactive">Inactive</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <fieldset class="subjects">
+      <legend class="px-1 text-sm font-medium">Subjects (drag rows to reorder)</legend>
+
+      <mat-autocomplete #subjectAuto="matAutocomplete">
+        @for (name of catalog.suggestions; track name) {
+          <mat-option [value]="name">{{ name }}</mat-option>
+        }
+      </mat-autocomplete>
+
+      <div
+        cdkDropList
+        formArrayName="subjects"
+        class="flex flex-col gap-2"
+        (cdkDropListDropped)="dropSubject($event)"
+      >
+        @for (row of subjects.controls; track row; let i = $index) {
+          <div cdkDrag class="subject-row" [formGroupName]="i">
+            <button
+              mat-icon-button
+              type="button"
+              cdkDragHandle
+              [attr.aria-label]="'Drag subject ' + (i + 1) + ' to reorder'"
+            >
+              <mat-icon fontSet="material-symbols-outlined">drag_indicator</mat-icon>
+            </button>
+            <mat-form-field class="flex-1" subscriptSizing="dynamic">
+              <mat-label>Subject {{ i + 1 }}</mat-label>
+              <input matInput formControlName="name" [matAutocomplete]="subjectAuto" />
+              @if (row.controls.name.hasError('required')) {
+                <mat-error>Subject name is required.</mat-error>
+              }
+            </mat-form-field>
+            <mat-form-field class="w-32" subscriptSizing="dynamic">
+              <mat-label>Grade</mat-label>
+              <input matInput type="number" min="0" max="100" formControlName="grade" />
+              @if (row.controls.grade.hasError('required')) {
+                <mat-error>Required.</mat-error>
+              } @else if (
+                row.controls.grade.hasError('min') || row.controls.grade.hasError('max')
+              ) {
+                <mat-error>0 – 100.</mat-error>
+              }
+            </mat-form-field>
+            <button
+              mat-icon-button
+              type="button"
+              [attr.aria-label]="'Remove subject ' + (i + 1)"
+              (click)="removeSubject(i)"
+            >
+              <mat-icon fontSet="material-symbols-outlined">delete</mat-icon>
+            </button>
+          </div>
+        } @empty {
+          <p class="text-sm opacity-70">No subjects yet.</p>
+        }
+      </div>
+      <button mat-stroked-button type="button" class="mt-2 self-start" (click)="addSubject()">
+        <mat-icon fontSet="material-symbols-outlined">add</mat-icon>
+        Add subject
+      </button>
+    </fieldset>
+
+    <mat-form-field>
+      <mat-label>Notes (HTML allowed)</mat-label>
+      <textarea matInput rows="3" formControlName="notes"></textarea>
+      @if (form.controls.notes.hasError('maxlength')) {
+        <mat-error>500 characters max.</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <!-- Not disabled while saving on purpose: double-click it — exhaustMap sends ONE request. -->
+      <button mat-flat-button type="submit">{{ saving() ? 'Saving…' : 'Save' }}</button>
+      <a mat-button routerLink="../list">Cancel</a>
+      <span class="text-xs opacity-70" aria-live="polite">
+        Save clicks: {{ saveClicks() }} · requests sent: {{ requestsSent() }} · form status:
+        {{ form.status }} · dirty: {{ form.dirty }}
+      </span>
+    </div>
+    <p class="text-xs opacity-70">
+      Component-level SubjectCatalog instance #{{ catalog.instanceNo }}; subjects saved from this
+      form: {{ catalog.added().join(', ') || 'none' }}
+    </p>
+  </form>
+</section>

@@ -1,0 +1,29 @@
+.subjects {
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.subject-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  border-radius: 8px;
+  background: var(--mat-sys-surface-container-low);
+}
+
+/* CDK drag-drop adds these classes while dragging. */
+.cdk-drag-preview {
+  box-shadow: var(--mat-sys-level3);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drop-list-dragging .subject-row:not(.cdk-drag-placeholder) {
+  transition: transform 200ms ease;
+}

@@ -1,0 +1,81 @@
+<!doctype html>
+<!-- HTML5: the doctype switches the browser to standards mode. `lang` helps screen readers pronounce text. -->
+<html lang="en">
+  <head>
+    <!-- HTML5 meta tags -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="ADME Portal sign in — M1 practice page (plain HTML, CSS, JS)"
+    />
+    <meta name="theme-color" content="#2c59a7" />
+    <title>Sign In | ADME (M1 practice)</title>
+    <link rel="stylesheet" href="styles.css" />
+    <!-- ES module: `type="module"` enables import/export and runs after the HTML is parsed (like `defer`). -->
+    <script type="module" src="js/login.js"></script>
+  </head>
+  <body class="login-body">
+    <!-- HTML5 semantic elements: <main> is the page's primary content (only one per page). -->
+    <main class="login-layout">
+      <!-- <aside> = related but secondary content (the brand panel). -->
+      <aside class="brand-panel" aria-hidden="true">
+        <div class="brand-logo">
+          <img src="../../public/assets/adme-logo.svg" alt="" width="160" height="40" />
+        </div>
+        <img class="brand-diagram" src="../../public/assets/asean-pillars-diagram.svg" alt="" />
+        <h2>Welcome to the ASCC Database for Monitoring and Evaluation (ADME) System</h2>
+      </aside>
+
+      <section class="login-card" aria-labelledby="login-title">
+        <h1 id="login-title">Sign In to Your Account</h1>
+        <p class="muted">Welcome back! Please enter your details.</p>
+
+        <!-- HTML5 form: `novalidate` turns off the browser's own bubbles so our JS shows the messages,
+             but the attributes (type="email", required, minlength) still describe the rules. -->
+        <form id="login-form" novalidate>
+          <div class="field">
+            <!-- Accessibility: every input needs a <label>; `for` must match the input's `id`. -->
+            <label for="email">Email</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autocomplete="username"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Enter your password"
+              required
+              minlength="6"
+            />
+          </div>
+
+          <div class="field-inline">
+            <input id="remember" name="remember" type="checkbox" />
+            <label for="remember">Remember me on this device</label>
+          </div>
+
+          <!-- aria-live="polite": screen readers announce the text whenever JS changes it. -->
+          <p id="form-error" class="form-error" role="alert" aria-live="polite"></p>
+
+          <button id="submit-btn" type="submit" class="btn-primary">Sign In</button>
+        </form>
+
+        <p class="hint">
+          Practice accounts are listed in <code>data/users.json</code> (same accounts as the Angular
+          mock backend).
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

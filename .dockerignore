@@ -1,0 +1,15 @@
+# Keep the build context small and secrets out of the image.
+node_modules
+dist
+.angular
+.tmp
+coverage
+.git
+.husky
+.vscode
+*.md
+practice
+deploy/k8s
+deploy/openshift
+.env*
+npm-debug.log*

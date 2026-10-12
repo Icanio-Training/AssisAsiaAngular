@@ -1,4 +1,14 @@
 {
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=827846
-  "recommendations": ["angular.ng-template"]
+  // VS Code prompts to install these when the folder is opened (Extensions → "Recommended").
+  "recommendations": [
+    "angular.ng-template", // Angular Language Service: template autocomplete, errors, go-to-definition
+    "dbaeumer.vscode-eslint", // ESLint errors inline (uses eslint.config.js)
+    "esbenp.prettier-vscode", // format on save (uses .prettierrc)
+    "bradlc.vscode-tailwindcss", // Tailwind class autocomplete + hover previews
+    "eamodio.gitlens", // blame, history, compare branches
+    "ms-azuretools.vscode-docker", // Dockerfile / compose support
+    "ms-kubernetes-tools.vscode-kubernetes-tools", // k8s manifests, kubectl integration
+    "redhat.vscode-yaml", // YAML schema validation (k8s, pipelines)
+    "vitest.explorer" // run/debug unit tests from the sidebar
+  ]
 }

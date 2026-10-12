@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "database": "Basis Data",
+    "dataManagement": "Manajemen Data",
+    "initiatives": "Inisiatif ASCC",
+    "outcomes": "Dokumen Hasil ASCC",
+    "kpis": "IKU Rencana Strategis ASCC",
+    "addData": "Tambah Data",
+    "uploadData": "Unggah Data",
+    "myData": "Data Saya",
+    "submittedData": "Data Terkirim",
+    "records": "Arsip",
+    "swp": "Rencana Kerja Sektoral",
+    "fua": "Tindak Lanjut",
+    "trash": "Tempat Sampah",
+    "practice": "Latihan: CRUD Siswa",
+    "language": "Bahasa",
+    "logout": "Keluar"
+  },
+  "login": {
+    "title": "Masuk ke Akun Anda",
+    "subtitle": "Selamat datang kembali! Silakan masukkan data Anda.",
+    "email": "Email",
+    "emailPlaceholder": "Masukkan email Anda",
+    "password": "Kata Sandi",
+    "passwordPlaceholder": "Masukkan kata sandi Anda",
+    "submit": "Masuk",
+    "submitting": "Sedang masuk…",
+    "forgot": "Lupa Kata Sandi?",
+    "registration": "Untuk pendaftaran, silakan hubungi Sekretariat ASEAN",
+    "errors": {
+      "email": "Masukkan alamat email yang valid",
+      "password": "Kata sandi wajib diisi",
+      "invalid": "Email atau kata sandi salah.",
+      "generic": "Terjadi kesalahan. Silakan coba lagi."
+    }
+  },
+  "common": {
+    "notFoundTitle": "Halaman tidak ditemukan",
+    "notFoundText": "Halaman yang Anda cari tidak ada atau Anda tidak memiliki akses.",
+    "backHome": "Kembali ke Inisiatif"
+  }
+}

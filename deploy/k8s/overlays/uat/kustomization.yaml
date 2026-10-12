@@ -1,0 +1,27 @@
+# uat overlay — same image as the other environments, different config. Apply with:
+#   kubectl apply -k deploy/k8s/overlays/uat            (preview: kubectl kustomize deploy/k8s/overlays/uat)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: adme-uat                  # one namespace per environment
+resources:
+  - ../../base
+images:
+  - name: adme-portal-angular
+    newName: myregistry.azurecr.io/adme-portal-angular   # ACR / ECR / Quay / OpenShift registry
+    newTag: latest                                      # CI sets the git SHA: kustomize edit set image ...
+configMapGenerator:
+  - name: adme-portal-config
+    files:
+      - config.json                    # becomes /usr/share/nginx/html/config.json in the pod
+replicas:
+  - name: adme-portal
+    count: 2
+patches:
+  - target: { kind: Ingress, name: adme-portal }
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: adme-uat.example.org
+      - op: replace
+        path: /spec/tls/0/hosts/0
+        value: adme-uat.example.org

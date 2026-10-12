@@ -1,0 +1,328 @@
+/* ==========================================================================
+   M1 practice — CSS3 fundamentals. Every section names the concept it shows.
+   ========================================================================== */
+
+/* CSS variables (custom properties): define once on :root, reuse with var(). */
+:root {
+  --brand: #2c59a7;
+  --brand-dark: #1a3a72;
+  --green: #5cb98c;
+  --ink: #141a28;
+  --muted: #5a6b85;
+  --border: #d7deea;
+  --danger: #ef3e36;
+  --radius: 9px;
+  --shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 6px 16px -8px rgba(15, 23, 42, 0.08);
+}
+
+/* Box model: by default width = content only; border-box makes width include padding + border. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+  color: var(--ink);
+  background: #fff;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* ---------- Login page: FLEXBOX (one-dimensional layout: a row or a column) ---------- */
+.login-layout {
+  display: flex; /* children sit side by side */
+  min-height: 100vh;
+}
+
+.brand-panel {
+  flex: 1; /* grow to fill half the row */
+  display: flex;
+  flex-direction: column; /* stack logo / diagram / text vertically */
+  justify-content: space-between;
+  padding: 36px 44px;
+  /* backgrounds: a gradient layered over a solid colour */
+  background: radial-gradient(circle at 90% 0%, rgba(108, 54, 148, 0.32), transparent 45%), #1e1235;
+  color: #fff;
+}
+
+.brand-logo {
+  width: max-content;
+  padding: 10px 14px;
+  border-radius: 12px; /* border-radius */
+  background: #fff;
+}
+
+.brand-diagram {
+  max-width: 100%;
+  align-self: center;
+}
+
+.brand-panel h2 {
+  margin: 0;
+  font-size: 19px;
+  text-align: center;
+}
+
+.login-card {
+  flex: 1;
+  max-width: 50%;
+  padding: 36px 56px;
+}
+
+.login-card h1 {
+  margin: 0 0 6px;
+  font-size: 25px;
+}
+
+.field {
+  margin-bottom: 18px;
+}
+
+.field label {
+  display: block; /* display: label is inline by default; block puts it on its own line */
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.field input {
+  width: 100%;
+  max-width: 392px;
+  padding: 14px 15px; /* padding = space INSIDE the border */
+  border: 1px solid var(--border); /* border */
+  border-radius: var(--radius);
+  font-size: 15px;
+  outline: none;
+}
+
+/* :focus-visible = keyboard focus only — accessible without ugly mouse-click outlines. */
+.field input:focus-visible {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(92, 185, 140, 0.25);
+}
+
+.field input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.field-inline {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* gap: space between flex/grid children (no margins needed) */
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+
+.form-error {
+  min-height: 18px;
+  margin: 0 0 6px;
+  color: var(--danger);
+  font-size: 12.5px;
+}
+
+.btn-primary {
+  width: 100%;
+  max-width: 392px;
+  height: 52px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--green);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: progress;
+}
+
+.btn-outline {
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hint {
+  margin-top: 20px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---------- Welcome page ---------- */
+
+/* POSITION: sticky = normal flow until you scroll past it, then it sticks to the top. */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* z-index only works on positioned elements */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 76px;
+  padding: 0 32px;
+  border-bottom: 1px solid #e2e9f3;
+  background: #fff;
+}
+
+.nav-list {
+  display: flex;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-list a {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #33415c;
+  text-decoration: none;
+}
+
+.nav-list a[aria-current='page'] {
+  background: #eef3fa;
+  color: var(--brand);
+  font-weight: 700;
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* POSITION: relative creates the reference box for the absolute child (::after). */
+.avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--brand);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* POSITION: absolute = placed relative to the nearest positioned ancestor (.avatar). */
+.avatar::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--green);
+}
+
+.welcome {
+  max-width: 1200px;
+  margin: 0 auto; /* margin = space OUTSIDE the border; auto left/right centres a block */
+  padding: 48px 32px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: #8a9bb5;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.welcome h1 {
+  margin: 0;
+  font-size: 30px;
+}
+
+/* GRID (two-dimensional layout: rows AND columns). auto-fit + minmax = responsive without media queries. */
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin: 40px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tool-card {
+  --accent: var(--brand); /* overridden per card from JS: el.style.setProperty('--accent', …) */
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-top: 4px solid var(--accent);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+/* Ellipsis: needs white-space + overflow + text-overflow together, and a width limit. */
+.tool-card h2 {
+  margin: 12px 0 8px;
+  overflow: hidden;
+  font-size: 18px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tool-tag {
+  width: max-content;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, white);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.site-footer {
+  padding: 20px;
+  background: #131a2b;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ---------- MEDIA QUERIES: responsive layout ---------- */
+
+/* Tablets and phones: hide the brand panel, let the form use the full width. */
+@media (max-width: 1080px) {
+  .brand-panel {
+    display: none;
+  }
+
+  .login-card {
+    max-width: none;
+  }
+}
+
+/* Phones: tighter padding, stack the header, hide the text nav. */
+@media (max-width: 600px) {
+  .login-card {
+    padding: 34px 22px;
+  }
+
+  .site-header {
+    padding: 0 16px;
+  }
+
+  .nav-list {
+    display: none;
+  }
+}

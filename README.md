@@ -1,59 +1,74 @@
-# AdmePortalAngular
+# ADME Portal — Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.1.
+Angular 22 migration of the ADME Portal React app (`C:\ADME\ADME-Portal-frontend`), built milestone by milestone as interview preparation.
+Standalone components · signals · new control flow (`@if` / `@for`) · strict TypeScript · zoneless · Tailwind 4.
 
-## Development server
+**Scope:** Login/Logout · Initiatives (Tool 1) · Outcome Documents (Tool 2) · Strategic Plan KPIs (Tool 3) · Data Management.
 
-To start a local development server, run:
+## Run it
 
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Requires Node 24+ (`node -v`). From this folder:
 
 ```bash
-ng generate component component-name
+npm install          # first time only
+npm start            # dev server → http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+No backend is needed: in development, `environment.useMocks = true` and API calls are answered by the
+mock backend in `src/app/core/mock-api/`. Test accounts (one per role) are listed in
+`src/app/core/mock-api/mock-users.ts`. To use the real Laravel API on `http://localhost:8000` instead, set
+`useMocks: false` in `src/environments/environment.development.ts` — `proxy.conf.json` forwards `/api` to it.
+
+| Command                     | What it does                                       |
+| --------------------------- | -------------------------------------------------- |
+| `npm start`                 | dev server with live reload                        |
+| `npx ng build`              | production build → `dist/`                         |
+| `npx ng test --watch=false` | unit tests (Vitest) once                           |
+| `npx ng lint`               | ESLint (TypeScript + template accessibility rules) |
+
+> If Windows reports _"An Application Control policy has blocked this file"_ on the first build, run it again —
+> Smart App Control blocks a new native binary until its reputation check passes.
+
+### M1 practice pages (plain HTML/CSS/JS)
 
 ```bash
-ng generate --help
+npx http-server . -p 5500 -c-1
 ```
 
-## Building
+Open http://localhost:5500/practice/m1-web-fundamentals/login.html (ES modules and `fetch` need a server, not `file://`).
+Type-check the TypeScript lesson: `npx tsc -p practice/m1-web-fundamentals/ts`.
 
-To build the project run:
+## Folder structure
 
-```bash
-ng build
+```
+src/
+├─ environments/                 environment.ts (prod) / environment.development.ts (ng serve)
+├─ styles.css                    Tailwind theme + global styles
+└─ app/
+   ├─ app.config.ts              providers: router, HttpClient + interceptors
+   ├─ app.routes.ts              the route tree
+   ├─ core/                      app-wide singletons
+   │  ├─ auth/                   AuthStore (signals), AuthService, guards, models
+   │  ├─ http/                   interceptors (base URL, token, 401, envelope)
+   │  ├─ mock-api/               dev-only mock backend
+   │  ├─ config/  constants/     APP_CONFIG, ROUTES, nav config
+   ├─ layout/                    AppLayout, Header, SiteFooter
+   └─ features/                  one folder per feature
+      ├─ auth/                   login + SSO callback pages
+      ├─ welcome/                temporary landing page (until Initiatives is migrated)
+      ├─ initiatives/  outcome-documents/  blueprint-kpi/  data-management/
+      │                          models/ now; pages, components, services as they are migrated
+practice/m1-web-fundamentals/    M1 HTML/CSS/JS/TS practice (not part of the Angular build)
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Learning docs
 
-## Running unit tests
+| File                 | Purpose                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------ |
+| `MIGRATION_MAP.md`   | every React file → its Angular file and the concept used                                   |
+| `INTERVIEW_GUIDE.md` | per topic: what/why, React comparison, where in this project, 30-second answer, follow-ups |
+| `CHEATSHEETS.md`     | quick-reference tables                                                                     |
+| `WEAK_TOPICS.md`     | topics to revisit after each milestone quiz                                                |
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Code comments that teach a concept use this format:
+`// CONCEPT: <name> | REACT: <equivalent> | INTERVIEW: <one line>`

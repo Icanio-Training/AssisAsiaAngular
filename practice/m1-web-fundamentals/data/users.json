@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Aisha Rahman",
+    "email": "admin@adme.test",
+    "password": "Adme@2026",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "Minh Tran",
+    "email": "manager@adme.test",
+    "password": "Adme@2026",
+    "role": "content_manager"
+  },
+  {
+    "id": 3,
+    "name": "Siti Nurhaliza",
+    "email": "contributor@adme.test",
+    "password": "Adme@2026",
+    "role": "contributor"
+  },
+  {
+    "id": 4,
+    "name": "Guest Viewer",
+    "email": "guest@adme.test",
+    "password": "Adme@2026",
+    "role": "guest"
+  }
+]

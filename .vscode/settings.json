@@ -1,0 +1,15 @@
+{
+  // Workspace settings — shared with the team through git.
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "eslint.validate": ["typescript", "html"],
+  "files.exclude": { "**/.angular": true },
+  "search.exclude": { "**/dist": true, "**/.angular": true, "**/coverage": true }
+}

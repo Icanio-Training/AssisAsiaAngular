@@ -1,0 +1,57 @@
+# Deployment: keeps N identical pods running and replaces them gradually on every new image.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: adme-portal
+  labels: { app: adme-portal }
+spec:
+  replicas: 2
+  revisionHistoryLimit: 5            # how many old ReplicaSets `kubectl rollout undo` can go back to
+  selector:
+    matchLabels: { app: adme-portal }
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }   # zero-downtime: start a new pod before stopping an old one
+  template:
+    metadata:
+      labels: { app: adme-portal }
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: { type: RuntimeDefault }
+      containers:
+        - name: web
+          image: adme-portal-angular:latest          # overlays replace this with the registry image + tag
+          ports:
+            - { name: http, containerPort: 8080 }
+          # Readiness: only send traffic once nginx answers. Liveness: restart if it stops answering.
+          readinessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /healthz, port: http }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          # requests = what the scheduler reserves; limits = hard ceiling (CPU throttled, memory OOM-killed).
+          resources:
+            requests: { cpu: 50m, memory: 64Mi }
+            limits: { cpu: 250m, memory: 128Mi }
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: { drop: ["ALL"] }
+          volumeMounts:
+            # Runtime config: the SAME image gets a different config.json per environment.
+            - name: runtime-config
+              mountPath: /usr/share/nginx/html/config.json
+              subPath: config.json
+              readOnly: true
+            # nginx needs writable cache/temp dirs because the root filesystem is read-only.
+            - { name: nginx-cache, mountPath: /var/cache/nginx }
+            - { name: tmp, mountPath: /tmp }
+      volumes:
+        - name: runtime-config
+          configMap: { name: adme-portal-config }
+        - { name: nginx-cache, emptyDir: {} }
+        - { name: tmp, emptyDir: {} }

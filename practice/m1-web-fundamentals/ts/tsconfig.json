@@ -1,0 +1,19 @@
+{
+  // tsconfig.json = compiler settings. Same flags as the Angular project's tsconfig.json.
+  "compilerOptions": {
+    "target": "ES2022", // which JavaScript version to output
+    "module": "preserve", // keep import/export as written (bundler decides)
+    "lib": ["ES2022", "DOM"], // which built-in APIs exist (Promise, fetch, document…)
+    "strict": true, // turns on all strict checks below (and more)
+    "noImplicitAny": true, // every value must have a known type
+    "strictNullChecks": true, // null/undefined are NOT assignable to string, number…
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true, // arr[0] is `T | undefined` — forces a check
+    "exactOptionalPropertyTypes": true, // `x?: string` means missing, not `undefined`
+    "experimentalDecorators": true, // needed for @Component-style decorators
+    "skipLibCheck": true,
+    "noEmit": true // only type-check; don't write .js files
+  },
+  "files": ["typescript-fundamentals.ts"]
+}

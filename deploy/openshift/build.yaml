@@ -1,0 +1,28 @@
+# Build INSIDE OpenShift (alternative to building in Jenkins/Azure and pushing):
+#   ImageStream = an internal "tag pointer" to images; BuildConfig = how to build them.
+#   oc start-build adme-portal --follow
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: adme-portal-angular
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: adme-portal
+spec:
+  source:
+    git:
+      uri: https://github.com/your-org/adme-portal-angular.git
+      ref: main
+  # Docker strategy: uses our multi-stage Dockerfile. (S2I — Source-to-Image — is the
+  # alternative: OpenShift detects Node.js and builds without a Dockerfile.)
+  strategy:
+    type: Docker
+    dockerStrategy: { dockerfilePath: Dockerfile }
+  output:
+    to: { kind: ImageStreamTag, name: "adme-portal-angular:latest" }
+  triggers:
+    - type: ConfigChange
+    - type: GitHub
+      github: { secretReference: { name: adme-portal-webhook } }

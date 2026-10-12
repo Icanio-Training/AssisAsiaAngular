@@ -1,0 +1,182 @@
+<section aria-labelledby="detail-heading" class="mx-auto flex max-w-4xl flex-col gap-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <a mat-icon-button routerLink="../list" aria-label="Back to the student list">
+      <mat-icon fontSet="material-symbols-outlined">arrow_back</mat-icon>
+    </a>
+    <h1 id="detail-heading" class="text-xl font-semibold">{{ fullName() }}</h1>
+    <span class="flex-1"></span>
+    <a mat-stroked-button [routerLink]="['..', current().id, 'edit']">
+      <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+      Edit
+    </a>
+  </div>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title
+        >{{ current().firstName | titlecase }} {{ current().lastName | titlecase }}</mat-card-title
+      >
+      <mat-card-subtitle>{{ current().email }} · {{ current().course }}</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="flex flex-wrap items-center gap-3 py-2">
+        <!-- OLD: [ngClass]="{ active: …, inactive: … }" — prefer [class.active]="…" (no import needed). -->
+        <span
+          class="badge"
+          [ngClass]="{
+            active: current().status === 'active',
+            inactive: current().status === 'inactive',
+          }"
+        >
+          {{ current().status | titlecase }}
+        </span>
+
+        <!-- @switch replaces OLD: [ngSwitch] + *ngSwitchCase + *ngSwitchDefault -->
+        @switch (current().status) {
+          @case ('active') {
+            <span>Currently attending classes.</span>
+          }
+          @case ('inactive') {
+            <span>On a break — not attending this term.</span>
+          }
+        }
+
+        <button mat-button type="button" [disabled]="togglingStatus()" (click)="toggleStatus()">
+          Mark as {{ current().status === 'active' ? 'inactive' : 'active' }} (PATCH)
+        </button>
+      </div>
+
+      <mat-tab-group mat-stretch-tabs="false" animationDuration="150ms">
+        <mat-tab label="Profile">
+          <dl class="profile-grid">
+            <dt>Date of birth</dt>
+            <dd>{{ current().dateOfBirth | date: 'longDate' }}</dd>
+            <dt>Enrolled on</dt>
+            <dd>{{ current().enrolledOn | date: 'EEEE, d MMM y' }}</dd>
+            <dt>Tuition (per year)</dt>
+            <dd>{{ tuition() | currency: 'GBP' : 'symbol' : '1.0-0' }}</dd>
+            <dt>Average grade</dt>
+            <dd>
+              {{ average() | number: '1.1-1' }} ({{ average() / 100 | percent: '1.0-0' }}) —
+              {{ average() | gradeLetter: true }}
+            </dd>
+          </dl>
+        </mat-tab>
+
+        <mat-tab label="Subjects">
+          <ul class="flex flex-col gap-2 py-3">
+            @for (subject of current().subjects; track subject.name) {
+              <li class="flex items-center gap-3">
+                <span class="w-40">{{ subject.name }}</span>
+                <span class="bar" aria-hidden="true">
+                  <!-- OLD: [ngStyle]="{ 'width.%': … }" — prefer [style.width.%]="…". -->
+                  <span class="bar-fill" [ngStyle]="{ 'width.%': subject.grade }"></span>
+                </span>
+                <span class="w-24 text-right"
+                  >{{ subject.grade }} ({{ subject.grade | gradeLetter }})</span
+                >
+              </li>
+            } @empty {
+              <li>No subjects recorded.</li>
+            }
+          </ul>
+          <p class="text-xs opacity-70">
+            First two subjects (slice pipe):
+            @for (subject of current().subjects | slice: 0 : 2; track subject.name) {
+              <span>{{ subject.name }}{{ $last ? '' : ', ' }}</span>
+            }
+          </p>
+        </mat-tab>
+
+        <mat-tab label="Notes">
+          <div class="py-3">
+            <h2 class="text-sm font-medium">Rendered with [innerHTML] (sanitized)</h2>
+            <div class="notes" [innerHTML]="current().notes"></div>
+            <h2 class="mt-3 text-sm font-medium">
+              Raw value from the API (interpolation = always text)
+            </h2>
+            <code class="block text-xs break-all">{{ current().notes }}</code>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Activity log</mat-card-title>
+      <mat-card-subtitle
+        >{{ activity().length | number }} entries — only the visible rows are in the
+        DOM</mat-card-subtitle
+      >
+    </mat-card-header>
+    <mat-card-content>
+      <!--
+        CONCEPT: CDK virtual scroll | REACT: react-window / react-virtual | INTERVIEW: renders only the rows in the viewport (+ a buffer), so 1,000 or 100,000 rows cost the same; needs a fixed itemSize.
+        *cdkVirtualFor is still a structural directive (there is no @for equivalent for virtual scrolling).
+      -->
+      <cdk-virtual-scroll-viewport
+        itemSize="36"
+        class="log-viewport"
+        aria-label="Activity log"
+        tabindex="0"
+      >
+        <div *cdkVirtualFor="let entry of activity()" class="log-row">
+          <span class="w-12 opacity-60">#{{ entry.id }}</span>
+          <span class="w-48">{{ entry.at | date: 'short' }}</span>
+          <span>{{ entry.text }}</span>
+        </div>
+      </cdk-virtual-scroll-viewport>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Component communication</mat-card-title>
+      <mat-card-subtitle>input() · output() · model() [(two-way)] · viewChild()</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="flex flex-col gap-2">
+      <app-student-grade-editor
+        subject="Demo subject"
+        [step]="5"
+        [(grade)]="demoGrade"
+        (committed)="lastCommitted.set($event)"
+      />
+      <p class="text-sm">
+        Parent's signal (updated by the child through model()): <strong>{{ demoGrade() }}</strong> ·
+        last committed (output): <strong>{{ lastCommitted() ?? '—' }}</strong>
+      </p>
+      <button mat-stroked-button type="button" class="self-start" (click)="resetEditor()">
+        Reset the child via viewChild() → editor.reset()
+      </button>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Lifecycle hooks</mat-card-title>
+      <mat-card-subtitle>Open the browser console</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content class="flex flex-col gap-2">
+      <div class="flex flex-wrap gap-2">
+        <button mat-stroked-button type="button" (click)="renameLogger()">
+          Change input (→ ngOnChanges)
+        </button>
+        <button mat-stroked-button type="button" (click)="showLogger.update((v) => !v)">
+          {{ showLogger() ? 'Destroy (→ ngOnDestroy)' : 'Create (→ constructor, ngOnInit…)' }}
+        </button>
+      </div>
+      @if (showLogger()) {
+        <app-lifecycle-logger [label]="loggerLabel()" />
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-slide-toggle [checked]="showDebug()" (change)="showDebug.set($event.checked)">
+    Show debug JSON
+  </mat-slide-toggle>
+  @if (showDebug()) {
+    <pre class="debug" aria-label="Student JSON">{{ current() | json }}</pre>
+  }
+</section>

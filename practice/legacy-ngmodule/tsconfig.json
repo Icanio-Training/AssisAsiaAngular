@@ -1,0 +1,14 @@
+{
+  // Type-checks the legacy reference file against the installed Angular packages.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM"],
+    "strict": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "files": ["legacy-examples.ts"]
+}

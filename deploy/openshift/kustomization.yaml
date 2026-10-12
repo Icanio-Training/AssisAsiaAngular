@@ -1,0 +1,29 @@
+# OpenShift = Kubernetes + extras. Reuse the same base; swap Ingress for a Route.
+#   oc new-project adme-uat                      (Project = namespace + RBAC + quotas)
+#   oc apply -k deploy/openshift
+#   oc get pods,svc,route
+#   oc rollout status deployment/adme-portal
+# No runAsUser is set in the base Deployment on purpose: OpenShift's restricted SCC
+# (Security Context Constraints) assigns a random UID — our nginx-unprivileged image and the
+# group-0 permissions in the Dockerfile make that work.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: adme-uat
+resources:
+  - ../k8s/base
+  - route.yaml
+images:
+  - name: adme-portal-angular
+    newName: image-registry.openshift-image-registry.svc:5000/adme-uat/adme-portal-angular
+    newTag: latest
+configMapGenerator:
+  - name: adme-portal-config
+    files:
+      - config.json=../k8s/overlays/uat/config.json
+patches:
+  - patch: |-
+      $patch: delete
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: adme-portal

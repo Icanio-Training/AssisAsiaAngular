@@ -1,0 +1,25 @@
+# Ingress: HTTP(S) entry point. "/" → this SPA, "/api" → the Laravel backend Service.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: adme-portal
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    # HSTS: browsers must use HTTPS for this host for a year.
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Strict-Transport-Security: max-age=31536000; includeSubDomains";
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts: [adme.example.org]
+      secretName: adme-portal-tls        # created by cert-manager / the platform team
+  rules:
+    - host: adme.example.org
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend: { service: { name: adme-api, port: { number: 8000 } } }
+          - path: /
+            pathType: Prefix
+            backend: { service: { name: adme-portal, port: { name: http } } }

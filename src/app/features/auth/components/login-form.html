@@ -1,0 +1,64 @@
+<div class="w-full max-w-[392px]">
+  <h1 class="mb-1.5 text-[25px] font-bold text-[#141A28]">{{ 'login.title' | translate }}</h1>
+  <p class="mb-6 text-[13.5px] text-[#5A6B85]">{{ 'login.subtitle' | translate }}</p>
+
+  <!-- [formGroup] binds the FormGroup from the class; (ngSubmit) is the submit handler. -->
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="mb-[18px]">
+      <label for="login-email" class="mb-2 block text-sm font-semibold text-[#141A28]">
+        {{ 'login.email' | translate }}
+      </label>
+      <input
+        id="login-email"
+        type="email"
+        autocomplete="username"
+        [placeholder]="'login.emailPlaceholder' | translate"
+        formControlName="email"
+        [attr.aria-invalid]="submitError() === 'login.errors.email'"
+        aria-describedby="login-error"
+        class="w-full rounded-[9px] border border-[#d7deea] px-[15px] py-3.5 text-[15px] outline-none focus:border-[#5CB98C]"
+      />
+    </div>
+    <div class="mb-[18px]">
+      <label for="login-password" class="mb-2 block text-sm font-semibold text-[#141A28]">
+        {{ 'login.password' | translate }}
+      </label>
+      <input
+        id="login-password"
+        type="password"
+        autocomplete="current-password"
+        [placeholder]="'login.passwordPlaceholder' | translate"
+        formControlName="password"
+        aria-describedby="login-error"
+        class="w-full rounded-[9px] border border-[#d7deea] px-[15px] py-3.5 text-[15px] outline-none focus:border-[#5CB98C]"
+      />
+    </div>
+
+    <!-- role="alert": screen readers announce the message as soon as it appears. -->
+    <p id="login-error" role="alert" class="mb-1.5 min-h-[18px] text-[12.5px] text-[#EF3E36]">
+      @if (submitError(); as key) {
+        {{ key | translate }}
+      }
+    </p>
+
+    <button
+      type="submit"
+      [disabled]="isPending()"
+      class="h-[52px] w-full rounded-[9px] bg-[#5CB98C] text-[15px] font-bold text-white transition-colors hover:bg-[#4aa87b] disabled:opacity-50"
+    >
+      {{ (isPending() ? 'login.submitting' : 'login.submit') | translate }}
+    </button>
+  </form>
+
+  <a
+    [routerLink]="routes.FORGOT_PASSWORD"
+    class="mt-2 mb-5 block text-[13px] text-primary-600 hover:underline"
+  >
+    {{ 'login.forgot' | translate }}
+  </a>
+
+  <div class="text-[12.5px] text-[#5A6B85]">
+    {{ 'login.registration' | translate }}
+    (<a href="mailto:adme@asean.org" class="text-primary-600">adme&#64;asean.org</a>)
+  </div>
+</div>

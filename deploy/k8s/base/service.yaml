@@ -1,0 +1,10 @@
+# Service: a stable virtual IP / DNS name (adme-portal.<namespace>.svc) in front of the pods.
+apiVersion: v1
+kind: Service
+metadata:
+  name: adme-portal
+  labels: { app: adme-portal }
+spec:
+  selector: { app: adme-portal }
+  ports:
+    - { name: http, port: 80, targetPort: http }

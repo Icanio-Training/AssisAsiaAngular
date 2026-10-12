@@ -1,0 +1,43 @@
+{
+  "nav": {
+    "database": "Database",
+    "dataManagement": "Data Management",
+    "initiatives": "ASCC Initiatives",
+    "outcomes": "ASCC Outcome Documents",
+    "kpis": "ASCC Strategic Plan KPIs",
+    "addData": "Add Data",
+    "uploadData": "Upload Data",
+    "myData": "My Data",
+    "submittedData": "Submitted Data",
+    "records": "Records",
+    "swp": "Sectoral Work Plan",
+    "fua": "Follow Up Action",
+    "trash": "Trash Bin",
+    "practice": "Practice: Students CRUD",
+    "language": "Language",
+    "logout": "Logout"
+  },
+  "login": {
+    "title": "Sign In to Your Account",
+    "subtitle": "Welcome back! Please enter your details.",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "submit": "Sign In",
+    "submitting": "Signing In…",
+    "forgot": "Forgot Password?",
+    "registration": "For registration, please contact the ASEAN Secretariat",
+    "errors": {
+      "email": "Please enter a valid email address",
+      "password": "Password is required",
+      "invalid": "Invalid email or password.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "common": {
+    "notFoundTitle": "Page not found",
+    "notFoundText": "The page you are looking for doesn't exist or you don't have access to it.",
+    "backHome": "Back to Initiatives"
+  }
+}

@@ -1,0 +1,15 @@
+# OpenShift Route = OpenShift's own (older, built-in) alternative to an Ingress.
+# edge TLS: the router terminates HTTPS and talks plain HTTP to the pod on 8080.
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: adme-portal
+  annotations:
+    haproxy.router.openshift.io/hsts_header: max-age=31536000;includeSubDomains
+spec:
+  host: adme.apps.openshift.example.org
+  to: { kind: Service, name: adme-portal }
+  port: { targetPort: http }
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect      # http → https

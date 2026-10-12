@@ -1,0 +1,25 @@
+# Reusable deploy steps (template) — renders the Kustomize overlay with the image tag,
+# then applies it to AKS through the Kubernetes service connection of the Environment.
+parameters:
+  - name: overlay
+    type: string
+  - name: tag
+    type: string
+
+steps:
+  - download: current
+    artifact: manifests
+  - task: KubernetesManifest@1
+    displayName: Render ${{ parameters.overlay }} overlay
+    name: bake
+    inputs:
+      action: bake
+      renderType: kustomize
+      kustomizationPath: $(Pipeline.Workspace)/manifests/overlays/${{ parameters.overlay }}
+  - task: KubernetesManifest@1
+    displayName: Deploy to AKS (${{ parameters.overlay }})
+    inputs:
+      action: deploy
+      namespace: adme-${{ parameters.overlay }}
+      manifests: $(bake.manifestsBundle)
+      containers: myregistry.azurecr.io/adme-portal-angular:${{ parameters.tag }}

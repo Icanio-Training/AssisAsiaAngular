@@ -1,0 +1,8 @@
+# Kustomize base: shared manifests. Overlays (dev/uat/prod) patch only what differs.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
